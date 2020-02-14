@@ -23,7 +23,7 @@ PROTOC_OPTS = plugins=grpc
 
 # These flags manage mapping the google-standard protobuf types (e.g., Timestamp)
 # into the annotated versions supplied with Gogo.  The trailing `,` matters.
-GOGO_OPTS = Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,
+GOGO_OPTS = Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,
 
 define protos_to_gogo_targets
 $(foreach proto,$(1),$(GOLANG)-$(GOGO)-$(basename $(proto)))
@@ -71,6 +71,7 @@ define gen_protoc_target
     -I./github.com/google/googleapis \
     $(4):/output \
     --proto_path=/input:. \
+    --proto_path=/input/$(PKG_PREFIX):. \
     /input/$(PKG_PREFIX)/$(TMPNAME)/$(1)
   @mkdir -p $(GOLANG)/$(3)/$(basename $(1))pb/$(basename $(1))pbfakes
   @sed 's@package $(basename $(1))pb@package $(basename $(1))pb // import "$(PKG_PREFIX)/golang/$(3)/$(basename $(1))pb"@' < $(TMPDIR)/$(PKG_PREFIX)/$(TMPNAME)/$(basename $(1)).pb.go > $(GOLANG)/$(3)/$(basename $(1))pb/$(basename $(1)).pb.go
