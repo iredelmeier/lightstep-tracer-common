@@ -10,8 +10,6 @@ option java_package = "com.lightstep.tracer.grpc";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
-import "github.com/lightstep/lightstep-tracer-common/collector.proto";
-
 // Kind indicates the semantics of the points.
 enum MetricKind {
     INVALID_METRIC_KIND = 0; // 0 the default value for type. It is invalid because we want all callers to set this value.
@@ -20,9 +18,9 @@ enum MetricKind {
 }
 
 message MetricPoint {
-  string time_series_key = 1;
-  repeated collector.KeyValue labels = 2;
-  MetricKind kind = 3;
+  MetricKind kind = 1;
+  string time_series_key = 2;
+  map<string, string> labels = 3;
   oneof value {
     uint64 uint = 4;
     double float = 5;
@@ -31,10 +29,10 @@ message MetricPoint {
 
 message IngestRequest {
   string idempotency_key = 1;
-  google.protobuf.Timestamp start = 2;
-  google.protobuf.Duration duration = 3;
-  collector.Reporter reporter = 4;
-  repeated collector.KeyValue labels = 5;
+  uint64 reporter_id = 2 [jstype=JS_STRING];
+  map<string, string> labels = 3;
+  google.protobuf.Timestamp start = 4;
+  google.protobuf.Duration duration = 5;
   repeated MetricPoint points = 6;
 }
 
